@@ -18,8 +18,8 @@
 
 package me.hypherionmc.mcdiscordformatter.discord;
 
-import net.minecraft.network.chat.contents.KeybindContents;
-import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.chat.KeybindComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -29,7 +29,7 @@ import java.util.function.Function;
  */
 public final class DiscordSerializerOptions {
 
-    public DiscordSerializerOptions(boolean embedLinks, boolean escapeMarkdown, @NotNull Function<KeybindContents, String> keybindProvider, @NotNull Function<TranslatableContents, String> translationProvider) {
+    public DiscordSerializerOptions(boolean embedLinks, boolean escapeMarkdown, @NotNull Function<KeybindComponent, String> keybindProvider, @NotNull Function<TranslatableComponent, String> translationProvider) {
         this.embedLinks = embedLinks;
         this.escapeMarkdown = escapeMarkdown;
         this.keybindProvider = keybindProvider;
@@ -42,7 +42,7 @@ public final class DiscordSerializerOptions {
      * @return the default {@link DiscordSerializerOptions}.
      */
     public static DiscordSerializerOptions defaults() {
-        return new DiscordSerializerOptions(false, true, KeybindContents::getName, TranslatableContents::getKey);
+        return new DiscordSerializerOptions(false, true, KeybindComponent::getName, TranslatableComponent::getKey);
     }
 
     /**
@@ -56,16 +56,16 @@ public final class DiscordSerializerOptions {
     private final boolean escapeMarkdown;
 
     /**
-     * The translator for {@link KeybindContents}s.
+     * The translator for {@link KeybindComponent}s.
      */
     @NotNull
-    private final Function<KeybindContents, String> keybindProvider;
+    private final Function<KeybindComponent, String> keybindProvider;
 
     /**
-     * The translator for {@link TranslatableContents}s.
+     * The translator for {@link TranslatableComponent}s.
      */
     @NotNull
-    private final Function<TranslatableContents, String> translationProvider;
+    private final Function<TranslatableComponent, String> translationProvider;
 
     public boolean isEmbedLinks() {
         return this.embedLinks;
@@ -75,11 +75,11 @@ public final class DiscordSerializerOptions {
         return this.escapeMarkdown;
     }
 
-    public @NotNull Function<KeybindContents, String> getKeybindProvider() {
+    public @NotNull Function<KeybindComponent, String> getKeybindProvider() {
         return this.keybindProvider;
     }
 
-    public @NotNull Function<TranslatableContents, String> getTranslationProvider() {
+    public @NotNull Function<TranslatableComponent, String> getTranslationProvider() {
         return this.translationProvider;
     }
 
@@ -91,11 +91,11 @@ public final class DiscordSerializerOptions {
         return this.escapeMarkdown == escapeMarkdown ? this : new DiscordSerializerOptions(this.embedLinks, escapeMarkdown, this.keybindProvider, this.translationProvider);
     }
 
-    public DiscordSerializerOptions withKeybindProvider(@NotNull Function<KeybindContents, String> keybindProvider) {
+    public DiscordSerializerOptions withKeybindProvider(@NotNull Function<KeybindComponent, String> keybindProvider) {
         return this.keybindProvider == keybindProvider ? this : new DiscordSerializerOptions(this.embedLinks, this.escapeMarkdown, keybindProvider, this.translationProvider);
     }
 
-    public DiscordSerializerOptions withTranslationProvider(@NotNull Function<TranslatableContents, String> translationProvider) {
+    public DiscordSerializerOptions withTranslationProvider(@NotNull Function<TranslatableComponent, String> translationProvider) {
         return this.translationProvider == translationProvider ? this : new DiscordSerializerOptions(this.embedLinks, this.escapeMarkdown, this.keybindProvider, translationProvider);
     }
 

@@ -23,6 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.regex.Pattern;
 
@@ -78,36 +79,36 @@ public class DefaultMinecraftRenderer implements MinecraftRenderer {
 
     @Override
     public MutableComponent appendSpoiler(MutableComponent component, MutableComponent content) {
-        return component.append(Component.literal("▌".repeat(content.getString().length())).withStyle(style ->
+        return component.append(new TextComponent("▌".repeat(content.getString().length())).withStyle(style ->
                 style.withColor(ChatFormatting.DARK_GRAY)
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, content))));
     }
 
     @Override
     public MutableComponent appendQuote(MutableComponent component, MutableComponent content) {
-        MutableComponent prefix = Component.literal("| ").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.BOLD);
+        MutableComponent prefix = new TextComponent("| ").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.BOLD);
         // TODO fix multiline quotes
         // return new LiteralText("").append(prefix).append(component.replaceText(PATTERN_NEWLINE, builder -> builder.append(prefix)));
-        return Component.empty().append(prefix).append(component);
+        return new TextComponent("").append(prefix).append(component);
     }
 
     @Override
     public MutableComponent appendEmoteMention(MutableComponent component, String name, String id) {
-        return component.append(Component.literal(":" + name + ":"));
+        return component.append(new TextComponent(":" + name + ":"));
     }
 
     @Override
     public MutableComponent appendChannelMention(MutableComponent component, String id) {
-        return component.append(Component.literal("<#" + id + ">"));
+        return component.append(new TextComponent("<#" + id + ">"));
     }
 
     @Override
     public MutableComponent appendUserMention(MutableComponent component, String id) {
-        return component.append(Component.literal("<@" + id + ">"));
+        return component.append(new TextComponent("<@" + id + ">"));
     }
 
     @Override
     public MutableComponent appendRoleMention(MutableComponent component, String id) {
-        return component.append(Component.literal("<@&" + id + ">"));
+        return component.append(new TextComponent("<@&" + id + ">"));
     }
 }

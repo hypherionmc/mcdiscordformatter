@@ -26,6 +26,7 @@ import dev.vankka.simpleast.core.node.StyleNode;
 import dev.vankka.simpleast.core.node.TextNode;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +44,7 @@ public interface MinecraftRenderer extends MinecraftNodeRenderer {
     default MutableComponent render(MutableComponent MutableComponent, Node<Object> node, MinecraftSerializerOptions<MutableComponent> serializerOptions,
                                     Function<Node<Object>, MutableComponent> renderWithChildren) {
         if (node instanceof TextNode) {
-            MutableComponent = Component.literal(((TextNode<Object>) node).getContent());
+            MutableComponent = new TextComponent(((TextNode<Object>) node).getContent());
         } else if (node instanceof StyleNode) {
             List<TextStyle> styles = new ArrayList<>(((StyleNode<?, TextStyle>) node).getStyles());
             for (TextStyle style : styles) {
@@ -69,7 +70,7 @@ public interface MinecraftRenderer extends MinecraftNodeRenderer {
                         ((StyleNode<?, TextStyle>) node).getStyles().remove(style);
                         break;
                     case QUOTE:
-                        MutableComponent content = Component.empty();
+                        MutableComponent content = new TextComponent("");
                         for (Node<Object> objectNode : serializerOptions.getParser().parse(style.getExtra().get("content"),
                                 new DiscordMarkdownRules.QuoteState(true),
                                 serializerOptions.getRules(),
@@ -80,7 +81,7 @@ public interface MinecraftRenderer extends MinecraftNodeRenderer {
                         MutableComponent = appendQuote(MutableComponent, content);
                         break;
                     case SPOILER:
-                        content = Component.empty();
+                        content = new TextComponent("");
                         for (Node<Object> objectNode : serializerOptions.getParser().parse(style.getExtra().get("content"),
                                 null, serializerOptions.getRules(), serializerOptions.isDebuggingEnabled())) {
                             content = content.append(renderWithChildren.apply(objectNode));
