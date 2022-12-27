@@ -1,0 +1,82 @@
+plugins {
+    id 'java'
+    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'maven-publish'
+}
+
+group lib_group
+version "${mc_ver}-${lib_version}"
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+repositories {
+    mavenCentral()
+}
+
+javadoc {
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    options.author()
+    options.encoding = 'UTF-8'
+    options.addBooleanOption('html5', true)
+    options.addBooleanOption('Xdoclint:none', true)
+    failOnError = false
+}
+
+minecraft {
+    version(mc_ver)
+}
+
+dependencies {
+    shade group: 'dev.vankka', name: 'SimpleAST', version: '2.2.7'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+}
+
+shadowJar {
+    from "LICENSE"
+    from sourceSets.main.output
+
+    configurations = [project.configurations.shade]
+    classifier = ""
+
+    def relocPath = "me.hypherionmc.mcdiscordformatter.reloc."
+    relocate "dev.vankka", relocPath + "dev.vankka"
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+build.finalizedBy shadowJar
+
+def env = System.getenv()
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(shadowJar) {
+                builtBy shadowJar
+            }
+        }
+    }
+
+    repositories {
+        if (env.MAVEN_URL) {
+            maven {
+                credentials {
+                    username env.MAVEN_USER
+                    password env.MAVEN_PASS
+                }
+                url env.MAVEN_URL
+            }
+        } else {
+            mavenLocal()
+        }
+    }
+}
