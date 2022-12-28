@@ -23,6 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
@@ -78,7 +79,7 @@ public class DefaultMinecraftRenderer implements MinecraftRenderer {
 
     @Override
     public MutableComponent appendSpoiler(MutableComponent component, MutableComponent content) {
-        return component.append(new TextComponent("▌".repeat(content.getString().length())).withStyle(style ->
+        return component.append(new TextComponent(StringUtils.repeat("▌", content.getString().length())).withStyle(style ->
                 style.withColor(ChatFormatting.DARK_GRAY)
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, content))));
     }

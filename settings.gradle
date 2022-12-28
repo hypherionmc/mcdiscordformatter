@@ -13,4 +13,4 @@ pluginManagement {
 }
 
 rootProject.name = 'mcdiscordformatter'
-include("Fabric", "Forge", "Common")
+include("Fabric", "Forge")
