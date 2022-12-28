@@ -18,8 +18,8 @@
 
 package me.hypherionmc.mcdiscordformatter.renderer;
 
-import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
 import dev.vankka.simpleast.core.node.Node;
+import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
 
 import java.util.function.Function;
 

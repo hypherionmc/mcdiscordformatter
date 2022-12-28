@@ -21,10 +21,11 @@ package me.hypherionmc.mcdiscordformatter.renderer;
 import dev.vankka.simpleast.core.node.Node;
 import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
 import net.minecraft.network.chat.MutableComponent;
+
 import java.util.function.Function;
 
 /**
- * Interface for rendering {@link Node}s into Minecraft {@link net.minecraft.network.chat.MutableComponent}s.
+ * Interface for rendering {@link Node}s into Minecraft {@link net.minecraft.text.MutableComponent}s.
  */
 public interface MinecraftNodeRenderer extends NodeRenderer<MutableComponent> {
 

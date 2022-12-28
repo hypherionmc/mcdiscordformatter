@@ -42,7 +42,7 @@ public final class DiscordSerializerOptions {
      * @return the default {@link DiscordSerializerOptions}.
      */
     public static DiscordSerializerOptions defaults() {
-        return new DiscordSerializerOptions(false, true, KeybindComponent::getName, TranslatableComponent::getKey);
+        return new DiscordSerializerOptions(false, true, KeybindComponent::getName, TranslatableComponent::getString);
     }
 
     /**

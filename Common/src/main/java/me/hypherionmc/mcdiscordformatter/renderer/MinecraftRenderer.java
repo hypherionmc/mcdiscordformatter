@@ -18,13 +18,12 @@
 
 package me.hypherionmc.mcdiscordformatter.renderer;
 
-import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
-import me.hypherionmc.mcdiscordformatter.rules.DiscordMarkdownRules;
 import dev.vankka.simpleast.core.TextStyle;
 import dev.vankka.simpleast.core.node.Node;
 import dev.vankka.simpleast.core.node.StyleNode;
 import dev.vankka.simpleast.core.node.TextNode;
-import net.minecraft.network.chat.Component;
+import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
+import me.hypherionmc.mcdiscordformatter.rules.DiscordMarkdownRules;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;

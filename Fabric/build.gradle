@@ -1,0 +1,102 @@
+plugins {
+    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'idea'
+}
+
+archivesBaseName = "${mod_name}-fabric-${minecraft_version}"
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    implementation project(":Common")
+
+    implementation group: 'dev.vankka', name: 'SimpleAST', version: '2.2.7'
+    shade group: 'dev.vankka', name: 'SimpleAST', version: '2.2.7'
+}
+
+shadowJar {
+    from "LICENSE"
+    from sourceSets.main.output
+
+    configurations = [project.configurations.shade]
+    classifier = ""
+
+    def relocPath = "me.hypherionmc.mcdiscordformatter.reloc."
+    relocate "dev.vankka", relocPath + "dev.vankka"
+}
+
+loom {
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+}
+
+remapJar {
+    dependsOn(shadowJar)
+    mustRunAfter(shadowJar)
+    input.set shadowJar.archiveFile.get()
+}
+
+processResources {
+    from project(":Common").sourceSets.main.resources
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile) {
+    source(project(":Common").sourceSets.main.allSource)
+}
+
+def env = System.getenv()
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+            artifact(shadowJar) {
+                builtBy shadowJar
+            }
+        }
+    }
+
+    repositories {
+        if (env.MAVEN_URL) {
+            maven {
+                credentials {
+                    username env.MAVEN_USER
+                    password env.MAVEN_PASS
+                }
+                url env.MAVEN_URL
+            }
+        } else {
+            mavenLocal()
+        }
+    }
+}
+
+publishing.publications.remove(publishing.publications.mavenJava)

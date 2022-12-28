@@ -20,7 +20,6 @@ package me.hypherionmc.mcdiscordformatter.renderer.implementation;
 
 import me.hypherionmc.mcdiscordformatter.renderer.MinecraftRenderer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;

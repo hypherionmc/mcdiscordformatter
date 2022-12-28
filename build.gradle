@@ -1,82 +1,53 @@
-plugins {
-    id 'java'
-    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id 'maven-publish'
-}
+subprojects {
+    apply plugin: 'java'
+    group = group
+    version = "${version}"
 
-group lib_group
-version "${mc_ver}-${lib_version}"
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+    java.withJavadocJar()
 
-configurations {
-    shade
-    implementation.extendsFrom shade
-}
+    jar {
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${mod_name}" }
+        }
+        manifest {
+            attributes([
+                'Specification-Title'     : mod_name,
+                'Specification-Vendor'    : mod_author,
+                'Specification-Version'   : project.jar.archiveVersion,
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_author,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Timestamp'              : System.currentTimeMillis(),
+                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                'Built-On-Minecraft'      : minecraft_version
+            ])
+        }
+    }
 
-repositories {
-    mavenCentral()
-}
-
-javadoc {
-    options.memberLevel = JavadocMemberLevel.PUBLIC
-    options.author()
-    options.encoding = 'UTF-8'
-    options.addBooleanOption('html5', true)
-    options.addBooleanOption('Xdoclint:none', true)
-    failOnError = false
-}
-
-minecraft {
-    version(mc_ver)
-}
-
-dependencies {
-    shade group: 'dev.vankka', name: 'SimpleAST', version: '2.2.7'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-}
-
-shadowJar {
-    from "LICENSE"
-    from sourceSets.main.output
-
-    configurations = [project.configurations.shade]
-    classifier = ""
-
-    def relocPath = "me.hypherionmc.mcdiscordformatter.reloc."
-    relocate "dev.vankka", relocPath + "dev.vankka"
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-build.finalizedBy shadowJar
-
-def env = System.getenv()
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact(shadowJar) {
-                builtBy shadowJar
-            }
+    sourcesJar {
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${mod_name}" }
         }
     }
 
     repositories {
-        if (env.MAVEN_URL) {
-            maven {
-                credentials {
-                    username env.MAVEN_USER
-                    password env.MAVEN_PASS
-                }
-                url env.MAVEN_URL
-            }
-        } else {
-            mavenLocal()
+        mavenCentral()
+
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = 'UTF-8'
+        it.options.release = 17
+    }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
     }
 }

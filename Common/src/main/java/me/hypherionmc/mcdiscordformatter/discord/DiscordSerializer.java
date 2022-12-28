@@ -27,11 +27,12 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * DiscordSerializer, for serializing from Minecraft {@link net.minecraft.network.chat.MutableComponent}s to Discord messages.
+ * DiscordSerializer, for serializing from Minecraft {@link net.minecraft.text.MutableComponent}s to Discord messages.
  *
  * @author Vankka
  *
  * @see DiscordSerializerOptions
+ * @see DiscordMarkdownRules
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class DiscordSerializer {
@@ -84,23 +85,8 @@ public class DiscordSerializer {
      */
     public DiscordSerializer(@NotNull DiscordSerializerOptions defaultOptions) {
         this.defaultOptions = defaultOptions;
-    }
-
-    /**
-     * Constructor fore creating a serializer with translations provided with arguments.
-     *
-     * @param keybindProvider     The keybind provider.
-     * @param translationProvider The translation provider.
-     * @deprecated Use {@link #DiscordSerializer(DiscordSerializerOptions)}
-     * {@link DiscordSerializerOptions#withKeybindProvider(Function)}
-     * {@link DiscordSerializerOptions#withTranslationProvider(Function)}
-     */
-    @Deprecated
-    public DiscordSerializer(Function<KeybindComponent, String> keybindProvider,
-                             Function<TranslatableComponent, String> translationProvider) {
-        this.defaultOptions = DiscordSerializerOptions.defaults();
-        this.keybindProvider = keybindProvider;
-        this.translationProvider = translationProvider;
+        this.translationProvider = defaultOptions.getTranslationProvider();
+        this.keybindProvider = defaultOptions.getKeybindProvider();
     }
 
     /**
@@ -148,7 +134,7 @@ public class DiscordSerializer {
     }
 
     /**
-     * Serializes a {@link net.minecraft.network.chat.MutableComponent} to Discord formatting (markdown) with this serializer's {@link DiscordSerializer#getDefaultOptions() default options}.<br/>
+     * Serializes a {@link net.minecraft.text.MutableComponent} to Discord formatting (markdown) with this serializer's {@link DiscordSerializer#getDefaultOptions() default options}.<br/>
      * Use {@link DiscordSerializer#serialize(MutableComponent, DiscordSerializerOptions)} to fine tune the serialization options.
      *
      * @param component The text component from a Minecraft chat message

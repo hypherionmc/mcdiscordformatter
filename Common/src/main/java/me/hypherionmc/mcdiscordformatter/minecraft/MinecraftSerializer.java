@@ -17,13 +17,12 @@
  */
 
 package me.hypherionmc.mcdiscordformatter.minecraft;
+
 import dev.vankka.simpleast.core.node.Node;
 import dev.vankka.simpleast.core.node.TextNode;
-import me.hypherionmc.mcdiscordformatter.renderer.MinecraftRenderer;
 import me.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
 import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultDiscordEscapingRenderer;
 import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultMinecraftRenderer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
