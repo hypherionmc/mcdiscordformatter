@@ -23,8 +23,8 @@ import dev.vankka.simpleast.core.node.TextNode;
 import me.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
 import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultDiscordEscapingRenderer;
 import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultMinecraftRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -124,10 +124,10 @@ public class MinecraftSerializer {
         List<Node<Object>> nodes = serializerOptions.getParser().parse(discordMessage, null, serializerOptions.getRules(), serializerOptions.isDebuggingEnabled());
         nodes = flattenTextNodes(nodes); // reduce the amount of single character nodes caused by special characters
         for (Node<Object> node : nodes) {
-            components.add(addChild(node, new TextComponent(""), serializerOptions));
+            components.add(addChild(node, Component.empty(), serializerOptions));
         }
 
-        MutableComponent text = new TextComponent("");
+        MutableComponent text = Component.empty();
         components.forEach(text::append);
         return text;
     }
@@ -167,7 +167,7 @@ public class MinecraftSerializer {
 
     private MutableComponent addChild(final Node<Object> node, final MutableComponent styleNode,
                                final MinecraftSerializerOptions<MutableComponent> serializerOptions) {
-        MutableComponent component = new TextComponent("").setStyle(styleNode.getStyle());
+        MutableComponent component = Component.empty().setStyle(styleNode.getStyle());
         Function<Node<Object>, MutableComponent> renderWithChildren = otherNode -> addChild(otherNode, component, serializerOptions);
 
         MutableComponent output = null;

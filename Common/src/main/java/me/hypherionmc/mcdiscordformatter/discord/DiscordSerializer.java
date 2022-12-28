@@ -20,6 +20,7 @@ package me.hypherionmc.mcdiscordformatter.discord;
 
 import me.hypherionmc.mcdiscordformatter.text.Text;
 import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.contents.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -50,14 +51,14 @@ public class DiscordSerializer {
         @SuppressWarnings("deprecation")
         @Override
         @Deprecated
-        public void setKeybindProvider(Function<KeybindComponent, String> provider) {
+        public void setKeybindProvider(Function<KeybindContents, String> provider) {
             throw new UnsupportedOperationException("Cannot modify public instance");
         }
 
         @SuppressWarnings("deprecation")
         @Override
         @Deprecated
-        public void setTranslationProvider(Function<TranslatableComponent, String> provider) {
+        public void setTranslationProvider(Function<MutableComponent, String> provider) {
             throw new UnsupportedOperationException("Cannot modify public instance");
         }
     };
@@ -66,8 +67,8 @@ public class DiscordSerializer {
      * The default {@link DiscordSerializerOptions} to use for this serializer.
      */
     private DiscordSerializerOptions defaultOptions;
-    private Function<KeybindComponent, String> keybindProvider;
-    private Function<TranslatableComponent, String> translationProvider;
+    private Function<KeybindContents, String> keybindProvider;
+    private Function<MutableComponent, String> translationProvider;
 
     /**
      * Constructor for creating a serializer, which {@link DiscordSerializerOptions#defaults()} as defaults.
@@ -96,7 +97,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #getDefaultOptions()} {@link DiscordSerializerOptions#getKeybindProvider()}
      */
     @Deprecated
-    public Function<KeybindComponent, String> getKeybindProvider() {
+    public Function<KeybindContents, String> getKeybindProvider() {
         return keybindProvider;
     }
 
@@ -107,7 +108,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #setDefaultOptions(DiscordSerializerOptions)} {@link DiscordSerializerOptions#withKeybindProvider(Function)}
      */
     @Deprecated
-    public void setKeybindProvider(Function<KeybindComponent, String> provider) {
+    public void setKeybindProvider(Function<KeybindContents, String> provider) {
         keybindProvider = provider;
     }
 
@@ -118,7 +119,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #getDefaultOptions()} {@link DiscordSerializerOptions#getTranslationProvider()}
      */
     @Deprecated
-    public Function<TranslatableComponent, String> getTranslationProvider() {
+    public Function<MutableComponent, String> getTranslationProvider() {
         return translationProvider;
     }
 
@@ -129,7 +130,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #setDefaultOptions(DiscordSerializerOptions)} {@link DiscordSerializerOptions#withTranslationProvider(Function)}
      */
     @Deprecated
-    public void setTranslationProvider(Function<TranslatableComponent, String> provider) {
+    public void setTranslationProvider(Function<MutableComponent, String> provider) {
         translationProvider = provider;
     }
 
@@ -232,20 +233,19 @@ public class DiscordSerializer {
         String content;
 
         // TODO maybe fix?
-        if (component instanceof KeybindComponent) {
-            KeybindComponent keybindComponent = (KeybindComponent)component;
+        if (component.getContents() instanceof KeybindContents) {
+            KeybindContents keybindComponent = (KeybindContents)component.getContents();
             content = keybindProvider.apply(keybindComponent);
-        } else if (component instanceof ScoreComponent) {
-            ScoreComponent scoreText = (ScoreComponent)component;
+        } else if (component.getContents() instanceof ScoreContents) {
+            ScoreContents scoreText = (ScoreContents)component.getContents();
             content = scoreText.getObjective();
-        } else if (component instanceof SelectorComponent) {
-            SelectorComponent selectorText = (SelectorComponent) component;
+        } else if (component.getContents() instanceof SelectorContents) {
+            SelectorContents selectorText = (SelectorContents) component.getContents();
             content = selectorText.getPattern();
-        } else if (component instanceof TextComponent) {
+        } else if (component.getContents() instanceof LiteralContents) {
             content = component.getString();
-        } else if (component instanceof TranslatableComponent) {
-            TranslatableComponent translatableComponent = (TranslatableComponent)component;
-            content = translationProvider.apply(translatableComponent);
+        } else if (component.getContents() instanceof TranslatableContents) {
+            content = translationProvider.apply(component);
         } else {
             content = "";
         }
