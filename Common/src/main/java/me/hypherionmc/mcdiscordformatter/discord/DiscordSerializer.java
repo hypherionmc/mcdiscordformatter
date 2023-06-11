@@ -19,6 +19,7 @@
 package me.hypherionmc.mcdiscordformatter.discord;
 
 import me.hypherionmc.mcdiscordformatter.text.Text;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -204,7 +205,7 @@ public class DiscordSerializer {
                         .replace("(?<!\\\\)(?:\\\\\\\\)*\\|", "\\|");
             }
 
-            stringBuilder.append(content);
+            stringBuilder.append(ChatFormatting.stripFormatting(content));
 
             if (text.isUnderline()) {
                 stringBuilder.append("__");
