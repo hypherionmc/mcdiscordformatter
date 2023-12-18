@@ -245,7 +245,7 @@ public class DiscordSerializer {
         } else if (component.getContents() instanceof SelectorContents) {
             SelectorContents selectorText = (SelectorContents) component.getContents();
             content = selectorText.getPattern();
-        } else if (component.getContents() instanceof PlainTextContents.LiteralContents) {
+        } else if (component.getContents() instanceof LiteralContents) {
             content = component.getString();
         } else if (component.getContents() instanceof TranslatableContents) {
             content = translationProvider.apply(component);

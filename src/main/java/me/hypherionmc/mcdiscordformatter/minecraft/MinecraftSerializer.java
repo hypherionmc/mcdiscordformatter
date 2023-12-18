@@ -38,7 +38,7 @@ import java.util.function.Function;
  * @author Vankka
  *
  * @see MinecraftSerializerOptions
- * @see MinecraftRenderer
+ * @see me.hypherionmc.mcdiscordformatter.renderer.MinecraftRenderer
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class MinecraftSerializer {
