@@ -23,7 +23,7 @@ and is translated using a fork of [Discord's SimpleAST](https://github.com/disco
 
 <dependency>
     <groupId>me.hypherionmc.sdlink</groupId>
-    <artifactId>mcdiscordformatter-1.20.3</artifactId>
+    <artifactId>mcdiscordformatter-1.18.1</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation("me.hypherionmc.sdlink:mcdiscordformatter-1.20.3:2.0.0")
+    implementation("me.hypherionmc.sdlink:mcdiscordformatter-1.18.1:2.0.0")
 }
 ```
 
