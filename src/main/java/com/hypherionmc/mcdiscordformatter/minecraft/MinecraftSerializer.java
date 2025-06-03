@@ -16,15 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.minecraft;
+package com.hypherionmc.mcdiscordformatter.minecraft;
 
 import dev.vankka.simpleast.core.node.Node;
 import dev.vankka.simpleast.core.node.TextNode;
-import me.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
-import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultDiscordEscapingRenderer;
-import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultMinecraftRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import com.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
+import com.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultDiscordEscapingRenderer;
+import com.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultMinecraftRenderer;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,12 +32,12 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * MinecraftSerializer, for serializing from Discord messages to Minecraft {@link MutableComponent}s.
+ * MinecraftSerializer, for serializing from Discord messages to Minecraft {@link Component}s.
  *
  * @author Vankka
  *
  * @see MinecraftSerializerOptions
- * @see MinecraftRenderer
+ * @see com.hypherionmc.mcdiscordformatter.renderer.MinecraftRenderer
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class MinecraftSerializer {
@@ -51,7 +50,7 @@ public class MinecraftSerializer {
     public static final MinecraftSerializer INSTANCE = new MinecraftSerializer() {
 
         @Override
-        public void setDefaultOptions(MinecraftSerializerOptions<MutableComponent> defaultOptions) {
+        public void setDefaultOptions(MinecraftSerializerOptions<Component> defaultOptions) {
             throw new UnsupportedOperationException("Cannot modify public instance");
         }
 
@@ -66,7 +65,7 @@ public class MinecraftSerializer {
      * to use for this serializer.
      * @see #serialize(String)
      */
-    private MinecraftSerializerOptions<MutableComponent> defaultOptions;
+    private MinecraftSerializerOptions<Component> defaultOptions;
 
     /**
      * The default {@link MinecraftSerializerOptions}
@@ -90,27 +89,27 @@ public class MinecraftSerializer {
      * @see MinecraftSerializerOptions#defaults()
      * @see MinecraftSerializerOptions#MinecraftSerializerOptions(dev.vankka.simpleast.core.parser.Parser, List, List, boolean)
      */
-    public MinecraftSerializer(@NotNull MinecraftSerializerOptions<MutableComponent> defaultOptions,
+    public MinecraftSerializer(@NotNull MinecraftSerializerOptions<Component> defaultOptions,
                                @NotNull MinecraftSerializerOptions<String> markdownDefaultOptions) {
         this.defaultOptions = defaultOptions;
         this.markdownDefaultOptions = markdownDefaultOptions;
     }
 
     /**
-     * Serializes Discord formatting (markdown) to a Minecraft {@link MutableComponent} using this serializer's
+     * Serializes Discord formatting (markdown) to a Minecraft {@link Component} using this serializer's
      * {@link MinecraftSerializer#getDefaultOptions() default options}.<br/>
      * Use {@link MinecraftSerializer#serialize(String, MinecraftSerializerOptions)} to fine tune the serialization options.
      *
      * @param discordMessage a Discord markdown message
      * @return the Discord message formatted to a Minecraft TextComponent
      */
-    public MutableComponent serialize(@NotNull final String discordMessage) {
-        MinecraftSerializerOptions<MutableComponent> options = getDefaultOptions();
+    public Component serialize(@NotNull final String discordMessage) {
+        MinecraftSerializerOptions<Component> options = getDefaultOptions();
         return serialize(discordMessage, options);
     }
 
     /**
-     * Serializes Discord formatting (markdown) to a Minecraft {@link MutableComponent}.
+     * Serializes Discord formatting (markdown) to a Minecraft {@link Component}.
      *
      * @param discordMessage    a Discord markdown message
      * @param serializerOptions The options to use for this serialization
@@ -118,8 +117,8 @@ public class MinecraftSerializer {
      * @see MinecraftSerializerOptions#defaults()
      * @see MinecraftSerializerOptions#MinecraftSerializerOptions(dev.vankka.simpleast.core.parser.Parser, List, List, boolean)
      */
-    public MutableComponent serialize(@NotNull final String discordMessage, @NotNull final MinecraftSerializerOptions<MutableComponent> serializerOptions) {
-        List<MutableComponent> components = new ArrayList<>();
+    public Component serialize(@NotNull final String discordMessage, @NotNull final MinecraftSerializerOptions<Component> serializerOptions) {
+        List<Component> components = new ArrayList<>();
 
         List<Node<Object>> nodes = serializerOptions.getParser().parse(discordMessage, null, serializerOptions.getRules(), serializerOptions.isDebuggingEnabled());
         nodes = flattenTextNodes(nodes); // reduce the amount of single character nodes caused by special characters
@@ -127,7 +126,7 @@ public class MinecraftSerializer {
             components.add(addChild(node, Component.empty(), serializerOptions));
         }
 
-        MutableComponent text = Component.empty();
+        Component text = Component.empty();
         components.forEach(text::append);
         return text;
     }
@@ -165,14 +164,14 @@ public class MinecraftSerializer {
         return output;
     }
 
-    private MutableComponent addChild(final Node<Object> node, final MutableComponent styleNode,
-                               final MinecraftSerializerOptions<MutableComponent> serializerOptions) {
-        MutableComponent component = Component.empty().setStyle(styleNode.getStyle());
-        Function<Node<Object>, MutableComponent> renderWithChildren = otherNode -> addChild(otherNode, component, serializerOptions);
+    private Component addChild(final Node<Object> node, final Component styleNode,
+                               final MinecraftSerializerOptions<Component> serializerOptions) {
+        Component component = Component.empty().style(styleNode.style());
+        Function<Node<Object>, Component> renderWithChildren = otherNode -> addChild(otherNode, component, serializerOptions);
 
-        MutableComponent output = null;
-        NodeRenderer<MutableComponent> render = null;
-        for (NodeRenderer<MutableComponent> renderer : serializerOptions.getRenderers()) {
+        Component output = null;
+        NodeRenderer<Component> render = null;
+        for (NodeRenderer<Component> renderer : serializerOptions.getRenderers()) {
             output = renderer.render(component, node, serializerOptions, renderWithChildren);
             if (output != null) {
                 render = renderer;
@@ -191,7 +190,7 @@ public class MinecraftSerializer {
             }
         }
 
-        MutableComponent newOutput = render.renderAfterChildren(output, node, serializerOptions, renderWithChildren);
+        Component newOutput = render.renderAfterChildren(output, node, serializerOptions, renderWithChildren);
         if (newOutput != null) {
             output = newOutput;
         }
@@ -271,7 +270,7 @@ public class MinecraftSerializer {
         return newNodes;
     }
 
-    public MinecraftSerializerOptions<MutableComponent> getDefaultOptions() {
+    public MinecraftSerializerOptions<Component> getDefaultOptions() {
         return this.defaultOptions;
     }
 
@@ -279,7 +278,7 @@ public class MinecraftSerializer {
         return this.markdownDefaultOptions;
     }
 
-    public void setDefaultOptions(MinecraftSerializerOptions<MutableComponent> defaultOptions) {
+    public void setDefaultOptions(MinecraftSerializerOptions<Component> defaultOptions) {
         this.defaultOptions = defaultOptions;
     }
 

@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.minecraft;
+package com.hypherionmc.mcdiscordformatter.minecraft;
 
 import dev.vankka.simpleast.core.node.Node;
 import dev.vankka.simpleast.core.parser.Parser;
 import dev.vankka.simpleast.core.parser.Rule;
 import dev.vankka.simpleast.core.simple.SimpleMarkdownRules;
-import me.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
-import me.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultMinecraftRenderer;
-import me.hypherionmc.mcdiscordformatter.rules.DiscordMarkdownRules;
-import net.minecraft.network.chat.MutableComponent;
+import com.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
+import com.hypherionmc.mcdiscordformatter.renderer.implementation.DefaultMinecraftRenderer;
+import com.hypherionmc.mcdiscordformatter.rules.DiscordMarkdownRules;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class MinecraftSerializerOptions<O> {
      *
      * @return the default {@link MinecraftSerializerOptions}.
      */
-    public static MinecraftSerializerOptions<MutableComponent> defaults() {
+    public static MinecraftSerializerOptions<Component> defaults() {
         return new MinecraftSerializerOptions<>(new Parser<>(),
                 DiscordMarkdownRules.createAllRulesForDiscord(true),
                 Collections.emptyList(),

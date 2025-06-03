@@ -16,27 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.discord;
+package com.hypherionmc.mcdiscordformatter.discord;
 
-import me.hypherionmc.mcdiscordformatter.text.Text;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.*;
+import com.hypherionmc.mcdiscordformatter.text.Text;
+import net.kyori.adventure.text.*;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
- * DiscordSerializer, for serializing from Minecraft {@link MutableComponent}s to Discord messages.
+ * DiscordSerializer, for serializing from Minecraft {@link Component}s to Discord messages.
  *
  * @author Vankka
  *
  * @see DiscordSerializerOptions
- * @see me.hypherionmc.mcdiscordformatter.rules.DiscordMarkdownRules
+ * @see com.hypherionmc.mcdiscordformatter.rules.DiscordMarkdownRules
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class DiscordSerializer {
@@ -54,14 +54,14 @@ public class DiscordSerializer {
         @SuppressWarnings("deprecation")
         @Override
         @Deprecated
-        public void setKeybindProvider(Function<KeybindContents, String> provider) {
+        public void setKeybindProvider(Function<KeybindComponent, String> provider) {
             throw new UnsupportedOperationException("Cannot modify public instance");
         }
 
         @SuppressWarnings("deprecation")
         @Override
         @Deprecated
-        public void setTranslationProvider(Function<MutableComponent, String> provider) {
+        public void setTranslationProvider(Function<TranslatableComponent, String> provider) {
             throw new UnsupportedOperationException("Cannot modify public instance");
         }
     };
@@ -70,8 +70,8 @@ public class DiscordSerializer {
      * The default {@link DiscordSerializerOptions} to use for this serializer.
      */
     private DiscordSerializerOptions defaultOptions;
-    private Function<KeybindContents, String> keybindProvider;
-    private Function<MutableComponent, String> translationProvider;
+    private Function<KeybindComponent, String> keybindProvider;
+    private Function<TranslatableComponent, String> translationProvider;
 
     /**
      * Constructor for creating a serializer, which {@link DiscordSerializerOptions#defaults()} as defaults.
@@ -100,7 +100,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #getDefaultOptions()} {@link DiscordSerializerOptions#getKeybindProvider()}
      */
     @Deprecated
-    public Function<KeybindContents, String> getKeybindProvider() {
+    public Function<KeybindComponent, String> getKeybindProvider() {
         return keybindProvider;
     }
 
@@ -111,7 +111,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #setDefaultOptions(DiscordSerializerOptions)} {@link DiscordSerializerOptions#withKeybindProvider(Function)}
      */
     @Deprecated
-    public void setKeybindProvider(Function<KeybindContents, String> provider) {
+    public void setKeybindProvider(Function<KeybindComponent, String> provider) {
         keybindProvider = provider;
     }
 
@@ -122,7 +122,7 @@ public class DiscordSerializer {
      * @deprecated Use {@link #getDefaultOptions()} {@link DiscordSerializerOptions#getTranslationProvider()}
      */
     @Deprecated
-    public Function<MutableComponent, String> getTranslationProvider() {
+    public Function<TranslatableComponent, String> getTranslationProvider() {
         return translationProvider;
     }
 
@@ -133,18 +133,18 @@ public class DiscordSerializer {
      * @deprecated Use {@link #setDefaultOptions(DiscordSerializerOptions)} {@link DiscordSerializerOptions#withTranslationProvider(Function)}
      */
     @Deprecated
-    public void setTranslationProvider(Function<MutableComponent, String> provider) {
+    public void setTranslationProvider(Function<TranslatableComponent, String> provider) {
         translationProvider = provider;
     }
 
     /**
-     * Serializes a {@link MutableComponent} to Discord formatting (markdown) with this serializer's {@link DiscordSerializer#getDefaultOptions() default options}.<br/>
-     * Use {@link DiscordSerializer#serialize(MutableComponent, DiscordSerializerOptions)} to fine tune the serialization options.
+     * Serializes a {@link TranslatableComponent} to Discord formatting (markdown) with this serializer's {@link DiscordSerializer#getDefaultOptions() default options}.<br/>
+     * Use {@link DiscordSerializer#serialize(Component, DiscordSerializerOptions)} to fine tune the serialization options.
      *
      * @param component The text component from a Minecraft chat message
      * @return Discord markdown formatted String
      */
-    public String serialize(@NotNull final MutableComponent component) {
+    public String serialize(@NotNull final Component component) {
         DiscordSerializerOptions options = getDefaultOptions();
         if (keybindProvider != null) {
             options = options.withKeybindProvider(keybindProvider);
@@ -161,10 +161,10 @@ public class DiscordSerializer {
      * @param component     The text component from a Minecraft chat message
      * @param embedLinks    Makes messages format as [message content](url) when there is an open_url clickEvent (for embeds)
      * @return Discord markdown formatted String
-     * @deprecated Use {@link #serialize(MutableComponent, DiscordSerializerOptions)} {@link DiscordSerializerOptions#withEmbedLinks(boolean)}
+     * @deprecated Use {@link #serialize(Component, DiscordSerializerOptions)} {@link DiscordSerializerOptions#withEmbedLinks(boolean)}
      */
     @Deprecated
-    public String serialize(@NotNull final MutableComponent component, boolean embedLinks) {
+    public String serialize(@NotNull final Component component, boolean embedLinks) {
         return serialize(component, defaultOptions.withEmbedLinks(embedLinks));
     }
 
@@ -177,7 +177,7 @@ public class DiscordSerializer {
      * @see DiscordSerializerOptions#defaults()
      * @see DiscordSerializerOptions#DiscordSerializerOptions(boolean, boolean, Function, Function)
      */
-    public String serialize(@NotNull final MutableComponent component, @NotNull final DiscordSerializerOptions serializerOptions) {
+    public String serialize(@NotNull final Component component, @NotNull final DiscordSerializerOptions serializerOptions) {
         StringBuilder stringBuilder = new StringBuilder();
         List<Text> texts = getTexts(new LinkedList<>(), component, new Text(), serializerOptions);
         for (Text text : texts) {
@@ -208,7 +208,7 @@ public class DiscordSerializer {
                         .replace("(?<!\\\\)(?:\\\\\\\\)*\\|", "\\|");
             }
 
-            stringBuilder.append(ChatFormatting.stripFormatting(content));
+            stringBuilder.append(stripFormatting(content));
 
             if (text.isUnderline()) {
                 stringBuilder.append("__");
@@ -229,45 +229,51 @@ public class DiscordSerializer {
         return length < 1 ? "" : stringBuilder.substring(0, length - 1);
     }
 
-    private LinkedList<Text> getTexts(@NotNull final List<Text> input, @NotNull final MutableComponent component,
+    private LinkedList<Text> getTexts(@NotNull final List<Text> input, @NotNull final Component component,
                                       @NotNull final Text text, @NotNull final DiscordSerializerOptions serializerOptions) {
         LinkedList<Text> output = new LinkedList<>(input);
 
         String content;
 
         // TODO maybe fix?
-        if (component.getContents() instanceof KeybindContents) {
-            KeybindContents keybindComponent = (KeybindContents)component.getContents();
+        if (component instanceof KeybindComponent keybindComponent) {
             content = keybindProvider.apply(keybindComponent);
-        } else if (component.getContents() instanceof ScoreContents) {
-            ScoreContents scoreText = (ScoreContents)component.getContents();
-            content = scoreText.getObjective();
-        } else if (component.getContents() instanceof SelectorContents) {
-            SelectorContents selectorText = (SelectorContents) component.getContents();
-            content = selectorText.getPattern();
-        } else if (component.getContents() instanceof PlainTextContents.LiteralContents) {
-            content = component.getString();
-        } else if (component.getContents() instanceof TranslatableContents) {
-            content = translationProvider.apply(component);
+        } else if (component instanceof ScoreComponent scoreComponent) {
+            content = scoreComponent.value();
+        } else if (component instanceof SelectorComponent selectorComponent) {
+            content = selectorComponent.pattern();
+        } else if (component instanceof TextComponent textComponent) {
+            content = textComponent.content();
+        } else if (component instanceof TranslatableComponent translatableComponent) {
+            content = translationProvider.apply(translatableComponent);
         } else {
             content = "";
         }
 
 
-        ClickEvent clickEvent = component.getStyle().getClickEvent();
-        if (serializerOptions.isEmbedLinks() && clickEvent != null && clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-            text.setContent("[" + content + "](" + clickEvent.getValue() + ")");
+        ClickEvent clickEvent = component.clickEvent();
+        if (serializerOptions.isEmbedLinks() && clickEvent != null && clickEvent.action() == ClickEvent.Action.OPEN_URL) {
+            text.setContent("[" + content + "](" + clickEvent.value() + ")");
         } else {
             text.setContent(content);
         }
 
-        if (component.getStyle().isBold()) {
-            text.setBold(true);
+        TextDecoration.State bold = component.decoration(TextDecoration.BOLD);
+        if (bold != TextDecoration.State.NOT_SET) {
+            text.setBold(bold == TextDecoration.State.TRUE);
         }
-        text.setBold(component.getStyle().isBold());
-        text.setItalic(component.getStyle().isItalic());
-        text.setUnderline(component.getStyle().isUnderlined());
-        text.setStrikethrough(component.getStyle().isStrikethrough());
+        TextDecoration.State italic = component.decoration(TextDecoration.ITALIC);
+        if (italic != TextDecoration.State.NOT_SET) {
+            text.setItalic(italic == TextDecoration.State.TRUE);
+        }
+        TextDecoration.State underline = component.decoration(TextDecoration.UNDERLINED);
+        if (underline != TextDecoration.State.NOT_SET) {
+            text.setUnderline(underline == TextDecoration.State.TRUE);
+        }
+        TextDecoration.State strikethrough = component.decoration(TextDecoration.STRIKETHROUGH);
+        if (strikethrough != TextDecoration.State.NOT_SET) {
+            text.setStrikethrough(strikethrough == TextDecoration.State.TRUE);
+        }
 
         if (!output.isEmpty()) {
             Text previous = output.getLast();
@@ -279,13 +285,18 @@ public class DiscordSerializer {
         }
         output.add(text);
 
-        for (Component child : component.getSiblings()) {
+        for (Component child : component.children()) {
             Text next = text.clone();
             next.setContent("");
-            output = getTexts(output, (MutableComponent) child, next, serializerOptions);
+            output = getTexts(output, child, next, serializerOptions);
         }
 
         return output;
+    }
+
+    private String stripFormatting(@Nullable String content) {
+        final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
+        return content == null ? null : FORMATTING_CODE_PATTERN.matcher(content).replaceAll("");
     }
 
     public DiscordSerializerOptions getDefaultOptions() {

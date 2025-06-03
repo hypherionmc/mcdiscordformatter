@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.renderer;
+package com.hypherionmc.mcdiscordformatter.renderer;
 
 import dev.vankka.simpleast.core.node.Node;
-import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
+import com.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
 
 import java.util.function.Function;
 

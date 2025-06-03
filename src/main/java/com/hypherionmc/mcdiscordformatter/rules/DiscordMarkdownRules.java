@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.rules;
+package com.hypherionmc.mcdiscordformatter.rules;
 
 import dev.vankka.simpleast.core.TextStyle;
 import dev.vankka.simpleast.core.node.Node;
@@ -57,7 +57,7 @@ public final class DiscordMarkdownRules {
      * <a href="https://discord.com/developers/docs/reference#message-formatting">Discord developer docs</a>
      */
     public static <R, S> Rule<R, Node<R>, S> createEmoteMentionRule() {
-        return new Rule<R, Node<R>, S>(PATTERN_EMOTE_MENTION) {
+        return new Rule<>(PATTERN_EMOTE_MENTION) {
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {
                 Map<String, String> extra = new HashMap<>();
@@ -101,7 +101,7 @@ public final class DiscordMarkdownRules {
      * <a href="https://support.discord.com/hc/en-us/articles/360022320632-Spoiler-Tags-">Discord blog</a>
      */
     public static <R, S> Rule<R, Node<R>, S> createSpoilerRule() {
-        return new Rule<R, Node<R>, S>(PATTERN_SPOILER) {
+        return new Rule<>(PATTERN_SPOILER) {
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {
                 Map<String, String> extra = new HashMap<>();
@@ -117,7 +117,7 @@ public final class DiscordMarkdownRules {
      * <a href="https://support.discord.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-">Discord blog</a>
      */
     public static <R, S> Rule<R, Node<R>, S> createCodeStringRule() {
-        return new Rule<R, Node<R>, S>(PATTERN_CODE_STRING) {
+        return new Rule<>(PATTERN_CODE_STRING) {
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {
                 String content = matcher.group();
@@ -128,7 +128,7 @@ public final class DiscordMarkdownRules {
     }
 
     private static <R, S> Rule<R, Node<R>, S> createSimpleMentionRule(Pattern pattern, TextStyle.Type styleType) {
-        return new Rule<R, Node<R>, S>(pattern) {
+        return new Rule<>(pattern) {
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {
                 Map<String, String> extra = new HashMap<>();
@@ -148,7 +148,7 @@ public final class DiscordMarkdownRules {
      * @see #createSpecialTextRule()
      */
     public static <R> Rule<R, Node<R>, Object> createQuoteRule() {
-        return new Rule<R, Node<R>, Object>(PATTERN_QUOTE) {
+        return new Rule<>(PATTERN_QUOTE) {
             @Override
             public Matcher match(CharSequence inspectionSource, String lastCapture, Object state) {
                 if (state instanceof QuoteState && ((QuoteState) state).isInQuote) {
@@ -176,7 +176,7 @@ public final class DiscordMarkdownRules {
      * <a href="https://support.discord.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-">Discord blog</a>
      */
     public static <R, S> Rule<R, Node<R>, S> createCodeBlockRule() {
-        return new Rule<R, Node<R>, S>(PATTERN_CODE_BLOCK) {
+        return new Rule<>(PATTERN_CODE_BLOCK) {
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {
                 Map<String, String> extra = new HashMap<>();
@@ -193,7 +193,7 @@ public final class DiscordMarkdownRules {
      * @see #createQuoteRule()
      */
     public static <R, S> Rule<R, Node<R>, S> createSpecialTextRule() {
-        return new Rule<R, Node<R>, S>(PATTERN_TEXT) {
+        return new Rule<>(PATTERN_TEXT) {
 
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {

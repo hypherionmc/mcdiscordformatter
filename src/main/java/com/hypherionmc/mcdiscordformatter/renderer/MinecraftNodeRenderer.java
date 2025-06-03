@@ -16,22 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.renderer;
+package com.hypherionmc.mcdiscordformatter.renderer;
 
 import dev.vankka.simpleast.core.node.Node;
-import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
-import net.minecraft.network.chat.MutableComponent;
+import com.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
+import net.kyori.adventure.text.Component;
 
 import java.util.function.Function;
 
 /**
- * Interface for rendering {@link Node}s into Minecraft {@link net.minecraft.text.MutableComponent}s.
+ * Interface for rendering {@link Node}s into Minecraft {@link Component}s.
  */
-public interface MinecraftNodeRenderer extends NodeRenderer<MutableComponent> {
+public interface MinecraftNodeRenderer extends NodeRenderer<Component> {
 
     /**
      * Renders the given {@link Node} onto the provided
-     * {@link MutableComponent} using the given
+     * {@link Component} using the given
      * {@link MinecraftSerializerOptions}.
      *
      * @param baseComponent      the input component to apply the node to
@@ -40,6 +40,6 @@ public interface MinecraftNodeRenderer extends NodeRenderer<MutableComponent> {
      * @param renderWithChildren a function to allow rendering a node recursively
      * @return the new component with the node applied to it
      */
-    MutableComponent render(MutableComponent baseComponent, Node<Object> node, MinecraftSerializerOptions<MutableComponent> serializerOptions,
-                       Function<Node<Object>, MutableComponent> renderWithChildren);
+    Component render(Component baseComponent, Node<Object> node, MinecraftSerializerOptions<Component> serializerOptions,
+                       Function<Node<Object>, Component> renderWithChildren);
 }

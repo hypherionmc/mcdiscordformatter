@@ -1,14 +1,20 @@
 plugins {
     id 'java'
-    id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT"
-    id 'com.github.johnrengelman.shadow' version '8.0.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id "com.hypherionmc.modutils.orion" version "2.0.1"
     id 'maven-publish'
 }
 
-// Edit in gradle.properties
+orion.setup {
+    enableMirrorMaven = true
+
+    versioning {
+        uploadBuild(true)
+    }
+}
+
 group = project_group
 version = "${version_major}.${version_minor}.${version_patch}"
-archivesBaseName = "${mod_name}-${minecraft_version}"
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -18,39 +24,25 @@ configurations {
     implementation.extendsFrom shade
 }
 
-// Add your maven repositories here
 repositories {
     mavenCentral()
-
-    // First Dark Dev Maven. Can be removed
-    maven {
-        url "https://maven.firstdark.dev/releases"
-    }
-
-    // First Dark Dev Mirror maven. Do not remove.
-    // It's required by this project to pull in dependencies for the modloaders
-    maven {
-        url "https://mcentral.firstdark.dev/releases"
-    }
 }
 
 dependencies {
-    shade group: 'dev.vankka', name: 'SimpleAST', version: '2.2.7'
+    shade "dev.vankka:SimpleAST:2.2.8"
+    implementation("net.kyori:adventure-api:${adventure}")
 }
 
 jar {
     manifest {
         attributes([
                 'Specification-Title'     : project.archivesBaseName,
-                'Specification-Vendor'    : mod_author,
                 'Specification-Version'   : project.version,
                 'Implementation-Title'    : project.name,
                 'Implementation-Version'  : project.version,
-                'Implementation-Vendor'   : mod_author,
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 'Timestamp'               : System.currentTimeMillis(),
-                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
-                'Built-On-Minecraft'      : minecraft_version
+                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})"
         ])
     }
 }
@@ -60,28 +52,12 @@ jar {
  * =       DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING        =
  * ===============================================================================
  */
-
-unimined.minecraft {
-    version minecraft_version
-
-    fabric {
-        loader fabric_loader
-    }
-
-    defaultRemapJar = false
-
-    mappings {
-        mojmap()
-        devNamespace "mojmap"
-    }
-}
-
 shadowJar {
     from sourceSets.main.output
     configurations = [project.configurations.shade]
     setArchiveClassifier('')
 
-    def relocPath = "me.hypherionmc.mcdiscordformatter.reloc."
+    def relocPath = "com.hypherionmc.mcdiscordformatter.reloc."
     relocate "dev.vankka", relocPath + "dev.vankka"
 }
 
@@ -90,27 +66,9 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release = 17
 }
 
-tasks.withType(GenerateModuleMetadata) {
+tasks.withType(GenerateModuleMetadata).configureEach {
     enabled = false
 }
-
-clean {
-    delete "$rootDir/artifacts"
-}
-
-tasks.register('delDevJar') {
-    doLast {
-        def tree = fileTree('build/libs')
-        tree.include '**/*-dev-shadow.jar'
-        tree.include '**/*-dev.jar'
-        tree.include '**/*-all.jar'
-        tree.include '**/*-slim.jar'
-        tree.each { it.delete() }
-    }
-}
-build.finalizedBy delDevJar
-
-def env = System.getenv()
 
 publishing {
     publications {
@@ -118,6 +76,7 @@ publishing {
             groupId project.group
             artifactId project.archivesBaseName
             version project.version
+
             artifact(shadowJar) {
                 builtBy shadowJar
             }
@@ -125,18 +84,6 @@ publishing {
     }
 
     repositories {
-        if (env.MAVEN_URL) {
-            maven {
-                credentials {
-                    username env.MAVEN_USER
-                    password env.MAVEN_PASS
-                }
-                url env.MAVEN_URL
-            }
-        } else {
-            mavenLocal()
-        }
+        maven orion.getPublishingMaven()
     }
 }
-
-publishing.publications.remove(publishing.publications.mavenJava)

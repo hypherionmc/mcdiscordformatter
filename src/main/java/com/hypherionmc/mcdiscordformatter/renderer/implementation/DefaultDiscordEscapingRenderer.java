@@ -16,14 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.renderer.implementation;
+package com.hypherionmc.mcdiscordformatter.renderer.implementation;
 
 import dev.vankka.simpleast.core.TextStyle;
 import dev.vankka.simpleast.core.node.Node;
 import dev.vankka.simpleast.core.node.StyleNode;
 import dev.vankka.simpleast.core.node.TextNode;
-import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
-import me.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
+import com.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializerOptions;
+import com.hypherionmc.mcdiscordformatter.renderer.NodeRenderer;
 
 import java.util.function.Function;
 
@@ -65,30 +65,26 @@ public class DefaultDiscordEscapingRenderer implements NodeRenderer<String> {
     }
 
     private String getChar(TextStyle textStyle) {
-        switch (textStyle.getType()) {
-            case BOLD: return "\\*\\*";
-            case QUOTE: return "\\>";
-            case ITALICS: return "\\" + (textStyle.getExtra().getOrDefault("asterisk", "true").equals("true") ? "*" : "_");
-            case SPOILER: return "\\|\\|";
-            case UNDERLINE: return "\\_\\_";
-            case CODE_BLOCK: return "\\`\\`\\`";
-            case CODE_STRING: return "\\`";
-            default: return null;
-        }
+        return switch (textStyle.getType()) {
+            case BOLD -> "\\*\\*";
+            case QUOTE -> "\\>";
+            case ITALICS -> "\\" + (textStyle.getExtra().getOrDefault("asterisk", "true").equals("true") ? "*" : "_");
+            case SPOILER -> "\\|\\|";
+            case UNDERLINE -> "\\_\\_";
+            case CODE_BLOCK -> "\\`\\`\\`";
+            case CODE_STRING -> "\\`";
+            default -> null;
+        };
     }
 
     @Override
-    public String render(String renderTo, Node<Object> node,
-                                      MinecraftSerializerOptions<String> serializerOptions,
-                                      Function<Node<Object>, String> renderWithChildren) {
+    public String render(String renderTo, Node<Object> node, MinecraftSerializerOptions<String> serializerOptions, Function<Node<Object>, String> renderWithChildren) {
         return render(renderTo, node, false);
     }
 
 
     @Override
-    public String renderAfterChildren(String renderTo, Node<Object> node,
-                                                   MinecraftSerializerOptions<String> serializerOptions,
-                                                   Function<Node<Object>, String> renderWithChildren) {
+    public String renderAfterChildren(String renderTo, Node<Object> node, MinecraftSerializerOptions<String> serializerOptions, Function<Node<Object>, String> renderWithChildren) {
         return render(renderTo, node, true);
     }
 }

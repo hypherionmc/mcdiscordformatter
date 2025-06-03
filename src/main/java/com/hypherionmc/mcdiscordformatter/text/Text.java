@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.hypherionmc.mcdiscordformatter.text;
+package com.hypherionmc.mcdiscordformatter.text;
 
 /**
  * Text class, for defining segments of text with formatting rules.
